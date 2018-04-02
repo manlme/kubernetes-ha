@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Pod
+metadata:
+labels:
+    component: etcd
+    tier: control-plane
+name: <podname>
+namespace: kube-system
+spec:
+containers:
+- command:
+    - etcd --name ${PEER_NAME} \
+    - --data-dir /var/lib/etcd \
+    - --listen-client-urls https//${PRIVATE_IP}:2379 \
+    - --advertise-client-urls http://${PRIVATE_IP}:2379 \
+    - --listen-peer-urls http://${PRIVATE_IP}:2380 \
+    - --initial-advertise-peer-url https://${PRIVATE_IP}:2380 \
+    - --initial-cluster etcd0=http://<etcd0-ip-address>:2380,etcd1=http://<etcd1-ip-address>:2380,etcd2=http://<etcd2-ip-address>:2380 \
+    - --initial-cluster-token my-etcd-token \
+    - --initial-cluster-state new
+    image: gcr.io/google_containers/etcd-amd64:3.1.0
+    livenessProbe:
+    httpGet:
+        path: /health
+        port: 2379
+        scheme: HTTP
+    initialDelaySeconds: 15
+    timeoutSeconds: 15
+    name: etcd
+    env:
+    - name: PUBLIC_IP
+    valueFrom:
+        fieldRef:
+        fieldPath: status.hostIP
+    - name: PRIVATE_IP
+    valueFrom:
+        fieldRef:
+        fieldPath: status.podIP
+    - name: PEER_NAME
+    valueFrom:
+        fieldRef:
+        fieldPath: metadata.name
+    volumeMounts:
+    - mountPath: /var/lib/etcd
+    name: etcd
+hostNetwork: true
+volumes:
+- hostPath:
+    path: /var/lib/etcd
+    type: DirectoryOrCreate
+    name: etcd
