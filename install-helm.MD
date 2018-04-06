@@ -19,3 +19,4 @@ helm init --tiller-image=<your docker image repos>/kubernetes-helm/tiller:v2.8.2
 ```
 touch ~/.helm/repository/repositories.yaml
 ```
+拥有了helm也就拥有了kubernetes非常多共享的应用。比如dashboard，nginx-ingress，elk， gitlab等等。手到拈来。
