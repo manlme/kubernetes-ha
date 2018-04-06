@@ -215,6 +215,21 @@ kubeadm join --token <token> <master-ip>:<master-port> --discovery-token-ca-cert
 ```
 ### haproxy和keepalive配置
 
+### 使用vip访问master
+* 配置kube-proxy使用lb vip访问master api
+```
+kubectl get configmap -n kube-system kube-proxy -o yaml > kube-proxy-cm.yaml
+sed -i 's#server:.*#server: https://<masterLoadBalancerFQDN>:6443#g' kube-proxy-cm.yaml
+kubectl apply -f kube-proxy-cm.yaml --force
+# restart all kube-proxy pods to ensure that they load the new configmap
+kubectl delete pod -n kube-system -l k8s-app=kube-proxy
+```
+* 配置kubelet使用lb vip访问master api
+```
+sudo sed -i 's#server:.*#server: https://<masterLoadBalancerFQDN>:6443#g' /etc/kubernetes/kubelet.conf
+sudo systemctl restart kubelet
+```
+
 
 
  
