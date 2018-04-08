@@ -105,8 +105,8 @@ etcd:
   - http://10.37.129.9:2379
 networking:
   podSubnet: 192.168.0.0/16
-# apiServerCertSANs:
-# - <load-balancer-ip>
+apiServerCertSANs:
+  - <load-balancer-ip>
 imageRepository: 10.211.55.2:5000/google_containers
 kubernetesVersion: v1.9.0
 apiServerExtraArgs:
