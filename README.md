@@ -60,6 +60,7 @@ systemctl start {docker,kubelet}
 编辑/etc/docker/daemon.json， 将私有仓库添加进去. 参考如下
 ```
 {
+"storage-driver": "devicemapper",
  "insecure-registries":["10.211.55.2:5000"]
 }
 ```
